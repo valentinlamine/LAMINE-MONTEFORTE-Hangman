@@ -5,6 +5,8 @@ import (
 	"os"
 )
 
+//
+
 var liste_mots []string
 var essaie int = 10
 

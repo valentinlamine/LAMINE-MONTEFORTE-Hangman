@@ -1,0 +1,14 @@
+ordre du programme :
+ON A 10 ESSAIE
+
+- le programme choisi un mot au hasard dans la liste
+- le programme révèle n lettres aléatoires dans le mot, où n est : len(mot) / 2 - 1 
+    fonction qui affiche une lettre au hasard(chiffre aléatoire sur la longueur du mot) qui s'éxécute n fois
+- Le programme lira l'entrée utilisateur pour suggérer une lettre.
+- Si la lettre n'est pas présente, il imprimera un message d'erreur et le nombre de tentatives diminuera (10->9->...0)
+- Si la lettre est présente, il révélera toutes les lettres correspondantes dans le mot.
+- Le programme continue jusqu'à ce que le mot soit trouvé ou que le nombre de tentatives soit égal à 0.
+
+
+
+

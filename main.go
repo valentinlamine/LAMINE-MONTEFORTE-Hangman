@@ -15,7 +15,10 @@ var liste_lettre []string
 
 func main() {
 	Initialisation()
-	fmt.Println("\n\n\nBonne chance, vous avez 10 essaies")
+	Affichage_espace()
+	fmt.Println("Bienvenue dans le jeu du pendu !")
+	fmt.Println("Bonne chance, vous avez 10 essaies")
+	fmt.Println("\nNote : Le programme affiche des lettres dès le lancement, Toutefois il n'affiche pas pour autant toutes les occurences de ces lettres")
 	for essaie > 0 {
 		Affichage_mot()
 		Affichage_liste_lettre()
@@ -40,7 +43,14 @@ func Initialisation() {
 	}
 }
 
+func Affichage_espace() {
+	fmt.Print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
+	fmt.Print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
+	fmt.Print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
+}
+
 func Affichage_mot() {
+	fmt.Print("\n")
 	for _, caractère := range mot_actuel {
 		fmt.Print(strings.ToUpper(string(caractère)), " ")
 	}
@@ -51,7 +61,7 @@ func Affichage_liste_lettre() {
 	if len(liste_lettre) == 0 {
 		return
 	}
-	fmt.Print("Lettres déjà essayées : ")
+	fmt.Print("Liste des essais : ")
 	for _, lettre := range liste_lettre {
 		fmt.Print(lettre, " ")
 	}
@@ -59,36 +69,34 @@ func Affichage_liste_lettre() {
 }
 
 func Affichage_pendu() {
-	//se déclenche lorsque l'utilisateur se trompe
-	//le pendu est représenté par des caractères ASCII
-	//le pendu se trouve dans le fichier hangman.txt
-	//le fichier contient 10 positions, une pour chaque essaie
-	//chaque position contient 7 lignes, finissant par un saut de ligne
-	//chaque ligne contient 9 caractères, finissant par un saut de ligne
-
-	//on ouvre le fichier
+	Affichage_espace()
 	fichier, err := os.ReadFile("hangman.txt")
 	if err != nil {
 		fmt.Println("Impossible d'ouvrir le fichier")
 		os.Exit(1)
 	}
-	//on récupère la position du pendu
-	var position int = 10 - essaie
-	//on récupère la ligne du pendu
-	var ligne int = 0 + position*7
-	//on affiche le pendu
+	var position int = 10 - (essaie + 1)
 	for i := 0; i < 7; i++ {
-		fmt.Println(string(fichier[ligne+i*9 : ligne+i*9+9]))
+		for j := 0; j < 10; j++ {
+			fmt.Print(string(fichier[position*71+i*10+j]))
+		}
 	}
+	fmt.Println()
 }
 
 func Entrée_utilisateur() string {
 	var lettre string
 	fmt.Print("Choix : ")
 	fmt.Scanln(&lettre)
-	if len(lettre) != 1 || lettre < "a" || lettre > "z" {
-		fmt.Println("Merci d'entrer une lettre")
+	if !Is_alpha(lettre) {
+		fmt.Println("Merci de n'entrer que des lettres minusucules")
 		return Entrée_utilisateur()
+	}
+	for _, lettre_essaye := range liste_lettre {
+		if strings.ToUpper(lettre) == lettre_essaye {
+			fmt.Println("Vous avez déjà essayé cette lettre, merci d'en choisir une autre")
+			return Entrée_utilisateur()
+		}
 	}
 	return strings.ToLower(lettre)
 }
@@ -123,28 +131,47 @@ func Lecture_Fichier(nom_fichier string) {
 }
 
 func Revelation_lettre(lettre string) {
-	for _, lettre_essaye := range liste_lettre {
-		if strings.ToUpper(lettre) == lettre_essaye {
-			essaie--
-			fmt.Println("Vous avez déjà essayé cette lettre, il vous reste", essaie, "essaies")
-			Affichage_pendu()
-		}
-	}
-	var mot_temp string
-	for index, caractère := range mot_a_trouver {
-		if string(caractère) == lettre {
-			mot_temp += lettre
+	if len(lettre) != 1 {
+		if lettre == mot_a_trouver {
+			mot_actuel = mot_a_trouver
 		} else {
-			mot_temp += string(mot_actuel[index])
+			essaie -= 2
+			Affichage_pendu()
+			fmt.Println("Votre mot est incorrect, il vous reste", essaie, "essaies")
+		}
+	} else {
+		var mot_temp string
+		for index, caractère := range mot_a_trouver {
+			if string(caractère) == lettre {
+				mot_temp += lettre
+			} else {
+				mot_temp += string(mot_actuel[index])
+			}
+		}
+		liste_lettre = append(liste_lettre, strings.ToUpper(lettre))
+		sort.Strings(liste_lettre)
+		if mot_temp == mot_actuel {
+			essaie--
+			Affichage_pendu()
+			fmt.Println("La lettre n'est pas dans le mot, il vous reste", essaie, "essaies :")
+		} else {
+			mot_actuel = mot_temp
+			if essaie != 10 {
+				Affichage_pendu()
+				fmt.Println("La lettre est dans le mot, il vous reste", essaie, "essaies :")
+			} else {
+				Affichage_espace()
+				fmt.Println("La lettre est dans le mot, il vous reste", essaie, "essaies :")
+			}
 		}
 	}
-	liste_lettre = append(liste_lettre, strings.ToUpper(lettre))
-	sort.Strings(liste_lettre)
-	if mot_temp == mot_actuel {
-		essaie--
-		fmt.Println("La lettre n'est pas dans le mot, il vous reste", essaie, "essaies")
-		Affichage_pendu()
-	} else {
-		mot_actuel = mot_temp
+}
+
+func Is_alpha(str string) bool {
+	for _, letter := range str {
+		if letter < 'a' || letter > 'z' {
+			return false
+		}
 	}
+	return true
 }

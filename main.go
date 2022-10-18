@@ -8,18 +8,19 @@ import (
 	"strings"
 )
 
+// variables globales
 var mot_a_trouver string
 var mot_actuel string
 var essaie int = 10
 var liste_lettre []string
 
 func main() {
-	Initialisation()
+	Initialisation() //on initialise le jeu
 	for essaie > 0 { //boucle principale du jeu, s'arrête lorsque l'on perd
-		Affichage_mot()
-		Affichage_liste_lettre()
-		Revelation_lettre(Entrée_utilisateur())
-		if mot_actuel == mot_a_trouver { //condition de victoire
+		Affichage_mot()                         //on affiche le mot actuel
+		Affichage_liste_lettre()                //on affiche la liste des lettres déjà essayées
+		Revelation_lettre(Entrée_utilisateur()) //on demande à l'utilisateur de choisir une lettre et on l'a révèle
+		if mot_actuel == mot_a_trouver {        //condition de victoire
 			fmt.Println("\n\nVous avez gagné !\nLe mot était bien :", mot_a_trouver)
 			os.Exit(0) //sortie du programme
 		}
@@ -30,11 +31,11 @@ func main() {
 func Initialisation() {
 	if len(os.Args) != 2 { //vérifie qu'il y a bien un argument
 		fmt.Println("Merci d'indiquer le nom du fichier texte à utiliser : \ngo run main.go nom_du_fichier.txt")
-		os.Exit(1)
+		os.Exit(1) //sinon, on quitte le programme
 	} else {
-		Lecture_Fichier(os.Args[1])
+		Lecture_Fichier(os.Args[1]) //on lit le fichier donné en argument
 	}
-	Affichage_espace()
+	Affichage_espace() //on affiche un espace pour faire un affichage propre
 	fmt.Println("Bienvenue dans le jeu du pendu !")
 	fmt.Println("Bonne chance, vous avez 10 essaies")
 	fmt.Println("\nNote : Le programme affiche des lettres dès le lancement, Toutefois il n'affiche pas pour autant toutes les occurences de ces lettres")
@@ -55,36 +56,36 @@ func Affichage_mot() {
 }
 
 func Affichage_liste_lettre() {
-	if len(liste_lettre) == 0 {
+	if len(liste_lettre) == 0 { //si la liste est vide
 		return
 	}
 	fmt.Print("Liste des essais : ")
 	for _, lettre := range liste_lettre {
-		fmt.Print(lettre, " ") //affiche la liste des lettres déjà essayées
+		fmt.Print(lettre, " ") //affiche la liste des lettres déjà essayées avec un espace entre chaque
 	}
 	fmt.Println()
 }
 
 func Affichage_pendu() {
-	Affichage_espace()
+	Affichage_espace()                         //on affiche un espace pour faire un affichage propre
 	fichier, err := os.ReadFile("hangman.txt") //on lit le fichier
 	if err != nil {                            //si il y a une erreur
 		fmt.Println("Impossible d'ouvrir le fichier")
 		os.Exit(1) //on quitte le programme
 	}
 	var position int = 10 - (essaie + 1) //on calcule la position de la ligne à afficher
-	for i := 0; i < 7; i++ {
-		for j := 0; j < 10; j++ {
-			fmt.Print(string(fichier[position*71+i*10+j])) //on affiche la ligne
+	for i := 0; i < 7; i++ {             //on boucle sur les 7 lignes du fichier
+		for j := 0; j < 10; j++ { //on boucle sur les 10 caractères de la ligne
+			fmt.Print(string(fichier[position*71+i*10+j])) //on affiche le caractère
 		}
 	}
 	fmt.Println()
 }
 
-func Entrée_utilisateur() string {
+func Entrée_utilisateur() string { //demande à l'utilisateur de choisir une lettre ou un mot
 	var lettre string
 	fmt.Print("Choix : ")
-	fmt.Scanln(&lettre)      //on récupère la lettre entrée par l'utilisateur
+	fmt.Scanln(&lettre)      //on récupère l'entrée utilisateur
 	if !Est_lettre(lettre) { //vérifie que l'utilisateur a bien entré que des lettres
 		fmt.Println("Merci de n'entrer que des lettres minusucules")
 		return Entrée_utilisateur() //on relance la fonction
@@ -122,8 +123,8 @@ func Lecture_Fichier(nom_fichier string) {
 	for i := 0; i < len(mot_a_trouver); i++ {
 		mot_actuel += "_" //on initialise le mot actuel avec des _
 	}
-	for i := 0; i < len(mot_a_trouver)/2-1; i++ { //on remplace des _ par des lettres
-		mot_actuel = strings.Replace(mot_actuel, "_", string(mot_a_trouver[i]), 1)
+	for i := 0; i < len(mot_a_trouver)/2-1; i++ {
+		mot_actuel = strings.Replace(mot_actuel, "_", string(mot_a_trouver[i]), 1) //on remplace (len(mot_a_trouver)/2 -1) des _ par des lettres
 	}
 }
 

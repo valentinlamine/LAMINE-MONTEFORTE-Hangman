@@ -90,10 +90,12 @@ func Entrée_utilisateur() string { //demande à l'utilisateur de choisir une le
 		fmt.Println("Merci de n'entrer que des lettres minusucules")
 		return Entrée_utilisateur() //on relance la fonction
 	}
-	for _, lettre_essaye := range liste_lettre { //vérifie que l'utilisateur n'a pas déjà essayé cette lettre
-		if strings.ToUpper(lettre) == lettre_essaye {
-			fmt.Println("Vous avez déjà essayé cette lettre, merci d'en choisir une autre")
-			return Entrée_utilisateur() //on relance la fonction
+	if len(lettre) == 1 { //vérifie que l'utilisateur n'a pas entré plus d'une lettre
+		for _, lettre_essaye := range liste_lettre { //vérifie que l'utilisateur n'a pas déjà essayé cette lettre
+			if strings.ToUpper(lettre) == lettre_essaye {
+				fmt.Println("Vous avez déjà essayé cette lettre, merci d'en choisir une autre")
+				return Entrée_utilisateur() //on relance la fonction
+			}
 		}
 	}
 	return strings.ToLower(lettre) //on retourne la lettre en minuscule
@@ -166,6 +168,9 @@ func Revelation_lettre(lettre string) {
 }
 
 func Est_lettre(str string) bool { //vérifie que la chaine de caractère ne contient que des lettres
+	if len(str) == 0 {
+		return false
+	}
 	for _, lettre := range str {
 		if lettre < 'a' || lettre > 'z' {
 			return false

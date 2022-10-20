@@ -30,7 +30,7 @@ func main() {
 
 func Initialisation() {
 	if len(os.Args) != 2 { //vérifie qu'il y a bien un argument
-		fmt.Println("Merci d'indiquer le nom du fichier texte à utiliser : \ngo run main.go nom_du_fichier.txt")
+		fmt.Print("\nMerci d'indiquer le nom du fichier texte à utiliser : \nExemple : go run main.go words.txt\n\n")
 		os.Exit(1) //sinon, on quitte le programme
 	} else {
 		Lecture_Fichier(os.Args[1]) //on lit le fichier donné en argument
@@ -106,7 +106,7 @@ func Lecture_Fichier(nom_fichier string) {
 	var liste_mots []string
 	fichier, err := os.ReadFile(nom_fichier) //on lit le fichier
 	if err != nil {                          //si il y a une erreur
-		fmt.Println("Impossible d'ouvrir le fichier")
+		fmt.Println("fichier introuvable ou illisible")
 		os.Exit(1) //on quitte le programme
 	}
 	for index, caractère := range fichier {
@@ -118,6 +118,10 @@ func Lecture_Fichier(nom_fichier string) {
 		}
 		if index == len(fichier)-1 { //on vérifie la fin
 			liste_mots = append(liste_mots, mot)
+		}
+		if caractère == 32 || (!Est_lettre(string(caractère)) && caractère != 10) { //si le caractère est un espace
+			fmt.Println("Le fichier contient des caractères non autorisés, merci d'utiliser un fichier texte avec uniquement des lettres minuscules")
+			os.Exit(1) //on quitte le programme
 		}
 	}
 	rand.Seed(int64(os.Getpid()))                          //on initialise le générateur de nombre aléatoire
@@ -135,7 +139,10 @@ func Revelation_lettre(lettre string) {
 		if lettre == mot_a_trouver { //vérifie que le mot entré est le bon
 			mot_actuel = mot_a_trouver //on met le mot actuel à jour
 		} else {
-			essaie -= 2       //on enlève 2 essaies
+			essaie -= 2     //on enlève 2 essaies
+			if essaie < 0 { //vérifie si il reste encore des essaies
+				essaie = 0 //on met les essai à 0 au cas ou ils étaient négatif
+			}
 			Affichage_pendu() //on affiche le pendu
 			fmt.Println("Votre mot est incorrect, il vous reste", essaie, "essaies")
 		}
